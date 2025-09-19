@@ -1,0 +1,14 @@
+
+---
+const { post } = Astro.props;
+// post: {slug, title, excerpt, coverImage, publishedAt}
+---
+<article class="card" style="display:flex; flex-direction:column; gap:.8rem">
+  {post.coverImage && <img class="post-cover" src={post.coverImage} alt={post.title} loading="lazy" />}
+  <div>
+    <a href={`/posts/${post.slug}`} style="font-size:1.15rem; font-weight:800">{post.title}</a>
+    <div><small class="muted">{new Date(post.publishedAt).toLocaleDateString()}</small></div>
+  </div>
+  <p style="margin:0.2rem 0 0.4rem 0; color:#374151">{post.excerpt}</p>
+  <a class="btn" href={`/posts/${post.slug}`}>Read →</a>
+</article>

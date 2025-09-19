@@ -1,0 +1,35 @@
+
+---
+import Layout from "../../layouts/Layout.astro";
+import sanitize from "sanitize-html";
+import { marked } from "marked";
+
+const { slug } = Astro.params;
+const apiURL = new URL(`/api/get-post?slug=${encodeURIComponent(slug!)}`, Astro.url);
+const data = await fetch(apiURL.toString(), { headers: { 'accept': 'application/json' }})
+  .then(r => r.json())
+  .catch(() => null);
+
+const post = data?.post;
+
+let html = "";
+if (post?.content) {
+  const raw = marked.parse(post.content);
+  html = sanitize(raw, {
+    allowedTags: sanitize.defaults.allowedTags.concat(['img','h1','h2']),
+    allowedAttributes: { a: ['href','target','rel'], img: ['src','alt'] }
+  });
+}
+---
+<Layout title={post ? post.title : 'Post'} description={post?.excerpt ?? ''} ogImage={post?.coverImage ?? '/favicon.svg'}>
+  {post ? (
+    <article class="card" style="display:flex; flex-direction:column; gap:1rem">
+      {post.coverImage && <img class="post-cover" src={post.coverImage} alt={post.title} />}
+      <h1 style="margin:0">{post.title}</h1>
+      <small class="muted">{new Date(post.publishedAt).toLocaleString()}</small>
+      <div class="content" set:html={html}></div>
+    </article>
+  ) : (
+    <div class="card">Post not found.</div>
+  )}
+</Layout>

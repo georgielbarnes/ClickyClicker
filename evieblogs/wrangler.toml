@@ -1,0 +1,20 @@
+
+name = "friendly-astro-blog"
+compatibility_date = "2024-11-01"
+
+[site]
+bucket = "./dist"
+
+[[kv_namespaces]]
+binding = "BLOG_KV"
+id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+[[r2_buckets]]
+binding = "BLOG_ASSETS"
+bucket_name = "blog-assets"
+
+[vars]
+JWT_SECRET = "change-me-long-random"
+ADMIN_USER = "admin@example.com"
+ADMIN_PASS = "very-strong-password"
+PUBLIC_CDN_BASE = "/cdn"

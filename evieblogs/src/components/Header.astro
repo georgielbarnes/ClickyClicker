@@ -1,0 +1,8 @@
+
+---
+const { heading = "Welcome", sub = "Write something lovely today." } = Astro.props;
+---
+<section class="card" style="display:flex; flex-direction:column; gap:.5rem; background:linear-gradient(180deg,#fffaf2,#ffffff); border:1px solid #f5efe6">
+  <h1 style="margin:0;font-size:2rem">{heading}</h1>
+  <p style="margin:0; color:var(--muted)">{sub}</p>
+</section>

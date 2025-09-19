@@ -1,0 +1,17 @@
+
+---
+import Layout from "../../layouts/Layout.astro";
+const error = Astro.url.searchParams.get('error');
+---
+<Layout title="Admin • Login">
+  <form class="card" method="post" action="/api/login" style="max-width:480px; margin:0 auto; display:flex; flex-direction:column; gap:.7rem">
+    <h2 style="margin:.3rem 0">Admin Login</h2>
+    <small class="muted">Only you, please! Uses secure httpOnly cookies.</small>
+    {error && <div style="color:#c2410c; font-weight:700">Login failed: {error}</div>}
+    <label for="user">Email</label>
+    <input id="user" name="user" type="email" required />
+    <label for="pass">Password</label>
+    <input id="pass" name="pass" type="password" required />
+    <button class="btn" type="submit">Sign in</button>
+  </form>
+</Layout>

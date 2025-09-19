@@ -1,0 +1,18 @@
+
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header.astro";
+import PostCard from "../components/PostCard.astro";
+
+const apiURL = new URL('/api/list-posts', Astro.url);
+const res = await fetch(apiURL.toString(), { headers: { 'accept': 'application/json' }});
+const { posts = [] } = await res.json().catch(() => ({posts: []}));
+---
+<Layout title="Friendly Blog">
+  <Header heading="A friendly writing blog" sub="Thoughtful words, warm vibes. ✨" />
+  <section class="grid" style="margin-top:1rem">
+    {posts.length === 0 ? (
+      <div class="card">No posts yet. Pop into the admin dashboard to write your first one!</div>
+    ) : posts.map(p => <PostCard post={p} />)}
+  </section>
+</Layout>

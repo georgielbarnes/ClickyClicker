@@ -1,0 +1,90 @@
+
+---
+import Layout from "../../layouts/Layout.astro";
+
+// SSR guard: ping a protected resource using incoming cookies,
+// redirect to /admin if unauthorized.
+const listURL = new URL('/api/list-posts', Astro.url);
+const cookie = Astro.request.headers.get('cookie') || '';
+const resp = await fetch(listURL.toString(), {
+  headers: { 'accept': 'application/json', 'cookie': cookie }
+}).catch(() => null);
+
+if (!resp || resp.status === 401) {
+  return Astro.redirect('/admin?error=login');
+}
+const { posts = [] } = await resp.json().catch(() => ({ posts: [] }));
+---
+<Layout title="Admin • Dashboard">
+  <section class="card" style="display:grid; gap:1rem">
+    <div>
+      <h2 style="margin:0">Create a post</h2>
+      <small class="muted">Write in Markdown. Upload a cover image below first if you like.</small>
+    </div>
+
+    <form id="uploadForm" class="card" style="background:#fcfcff">
+      <label>Cover image</label>
+      <input type="file" name="file" accept="image/*" />
+      <button class="btn secondary" type="submit">Upload file</button>
+      <div id="uploadResult" class="muted"></div>
+    </form>
+
+    <form id="postForm">
+      <label>Title</label>
+      <input name="title" required />
+      <label>Slug (auto if blank)</label>
+      <input name="slug" placeholder="my-first-post" />
+      <label>Excerpt</label>
+      <input name="excerpt" maxlength="180" />
+      <label>Cover image URL</label>
+      <input name="coverImage" placeholder="/cdn/your-file-key" />
+      <label>Content (Markdown)</label>
+      <textarea name="content" rows="12" required></textarea>
+      <button class="btn" type="submit">Publish</button>
+      <div id="postResult" class="muted"></div>
+    </form>
+
+    <div class="card" id="postsList">
+      <h3 style="margin-top:0">Existing posts</h3>
+      <ul id="postsUl">
+        {posts.map(p => (
+          <li><a href={`/posts/${p.slug}`}>{p.title}</a> — <small>{new Date(p.publishedAt).toLocaleString()}</small></li>
+        ))}
+      </ul>
+    </div>
+
+    <form method="post" action="/api/logout">
+      <button class="btn secondary" type="submit">Log out</button>
+    </form>
+  </section>
+
+  <script>
+    const uploadForm = document.getElementById('uploadForm');
+    const uploadResult = document.getElementById('uploadResult');
+    uploadForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(uploadForm);
+      const r = await fetch('/api/upload', { method:'POST', body: fd, credentials:'include' });
+      const j = await r.json();
+      uploadResult.textContent = j.ok ? 'Uploaded: ' + j.url : 'Upload failed';
+      if (j.url) document.querySelector('input[name="coverImage"]').value = j.url;
+    });
+
+    const postForm = document.getElementById('postForm');
+    const postResult = document.getElementById('postResult');
+    postForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(postForm);
+      const obj = Object.fromEntries(fd.entries());
+      const r = await fetch('/api/new-post', {
+        method:'POST',
+        headers:{'content-type':'application/json'},
+        credentials:'include',
+        body: JSON.stringify(obj)
+      });
+      const j = await r.json();
+      if (j.ok){ postResult.textContent = 'Published ✔'; }
+      else { postResult.textContent = 'Error: ' + (j.error || 'unknown'); }
+    });
+  </script>
+</Layout>

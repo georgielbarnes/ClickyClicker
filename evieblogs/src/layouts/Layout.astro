@@ -1,0 +1,37 @@
+
+---
+const { title = "Friendly Blog", description = "A cosy place for your words", ogImage = "/favicon.svg" } = Astro.props;
+import "../styles/global.css";
+---
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" />
+    <title>{title}</title>
+    <meta property="og:title" content={title}/>
+    <meta property="og:description" content={description}/>
+    <meta property="og:image" content={ogImage}/>
+  </head>
+  <body>
+    <header class="nav">
+      <div class="container" style="display:flex; align-items:center; justify-content:space-between; padding: .8rem 1rem">
+        <a class="brand" href="/">
+          <img src="/favicon.svg" width="28" height="28" alt="logo"/>
+          <div>Friendly <span>Blog</span></div>
+        </a>
+        <nav style="display:flex; gap:1rem; align-items:center">
+          <a href="/" style="font-weight:600">Home</a>
+          <a href="/admin" style="font-weight:600">Admin</a>
+        </nav>
+      </div>
+    </header>
+    <main class="container">
+      <slot />
+    </main>
+    <footer class="container" style="padding-top:2rem; border-top:1px dashed #eee; color:var(--muted);">
+      Built with Astro + Cloudflare Pages 💛
+    </footer>
+  </body>
+</html>

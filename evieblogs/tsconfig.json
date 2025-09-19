@@ -1,0 +1,10 @@
+
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "moduleResolution": "bundler",
+    "module": "esnext",
+    "target": "es2022",
+    "types": ["@cloudflare/workers-types"]
+  }
+}
